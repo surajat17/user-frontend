@@ -1,0 +1,38 @@
+name: Build and Deploy Next.js to Amazon ECR
+on:
+  push:
+    branches:
+      - main
+env:
+  AWS_DEFAULT_REGION: eu-north-1
+  BACKEND_URL: localhost:3000
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        id: aws-credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
+      - name: Build, tag, and push Docker image to Amazon ECR
+        run: |
+          aws_account_id=${{ secrets.AWS_ACCOUNT_ID }}
+          region=${{ env.AWS_DEFAULT_REGION }}
+          repository=next
+          image_tag=latest
+          # Create a .env file with the necessary environment variables
+          echo "NEXT_PUBLIC_BACKEND_URL=${{ env.BACKEND_URL }}" > .env
+          # Build the Docker image
+          docker build -t $aws_account_id.dkr.ecr.eu-north-1.amazonaws.com/$repository:$image_tag .
+          # Push the Docker image to ECR
+          docker push $aws_account_id.dkr.ecr.eu-north-1.amazonaws.com/$repository:$image_tag
