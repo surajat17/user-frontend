@@ -29,7 +29,7 @@ jobs:
         run: |
           commit_hash=$(git rev-parse --short HEAD)
           build_date=$(date +"%d%m%Y")
-          echo "{\"commit\": \"$commit_hash\", \"date\": \"$build_date\"}" > version.json
+          echo "{\"commit\": \"$commit_hash\", \"date\": \"$build_date\"}" > public/version.json
           
       - name: Build, tag, and push Docker image to Amazon ECR
         run: |
