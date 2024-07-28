@@ -24,6 +24,13 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: true
+
+      - name: Generate version info
+        run: |
+          commit_hash=$(git rev-parse --short HEAD)
+          build_date=$(date +"%d%m%Y")
+          echo "{\"commit\": \"$commit_hash\", \"date\": \"$build_date\"}" > version.json
+          
       - name: Build, tag, and push Docker image to Amazon ECR
         run: |
           aws_account_id=${{ secrets.AWS_ACCOUNT_ID }}
