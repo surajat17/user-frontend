@@ -20,8 +20,7 @@ const Home = () => {
   }, [page]);
 
   const fetchUsers = async () => {
-    console.log(role);
-    const response = await fetch(`https://user-backend-ghze.onrender.com/users?page=${page}&limit=10&username=${username}&role=${role}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users?page=${page}&limit=10&username=${username}&role=${role}`);
     const data = await response.json();
     console.log(data);
     setUsers(data.users);
